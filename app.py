@@ -11,79 +11,83 @@ if "messages" not in st.session_state:
         {"role": "assistant", "content": "Welcome to Lejon Animation Studio 😊 How can I help you today?"}
     ]
 
+if "active_panel" not in st.session_state:
+    st.session_state.active_panel = None
+
 # ---------------- RESPONSE ENGINE ----------------
 def generate_reply(user_text):
     text = user_text.lower()
 
-    if any(word in text for word in ["hi", "hello", "hey"]):
-        return "Hello 😊 Ask me about courses, fees, duration, drawing skills, or careers."
+    if "animation" in text:
+        return "🎬 Animation Course: Covers 2D, 3D, character design & storytelling."
 
-    elif "course" in text:
-        return "We offer Animation, VFX, Background Design, Video Editing, and AI Film Making ✨"
+    elif "vfx" in text:
+        return "✨ VFX Course: Learn visual effects, compositing & cinematic visuals."
 
-    elif "animation" in text or "ani" in text:
-        return "Great choice 😃 Our Animation program covers 2D, 3D, character design, and storytelling."
+    elif "editing" in text:
+        return "🎞 Video Editing: Professional editing, transitions & production workflow."
 
-    elif "fees" in text or "fee" in text:
-        return "Fees vary by course 🙂 For accurate details, please contact Lejon Animation Studio."
+    return "Nice choice 👍 Ask anything else!"
 
-    elif "duration" in text:
-        return "Duration depends on the selected program 👍 Typically ranges from short-term to professional tracks."
-
-    elif "drawing" in text:
-        return "No worries 😊 Drawing skills are NOT mandatory. We train from basics."
-
-    elif "career" in text or "job" in text:
-        return "Students explore careers in animation studios, VFX houses, gaming, editing, and digital media 🚀"
-
-    elif "location" in text:
-        return "We are located at 📍 University Road, Rajkot."
-
-    else:
-        return "Nice 🙂 You can ask about courses, fees, duration, drawing skills, careers, or location."
-
-# ---------------- CHAT HISTORY RENDER ----------------
+# ---------------- CHAT RENDER ----------------
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
 # ---------------- USER INPUT ----------------
-user_prompt = st.chat_input("Type your message")
+prompt = st.chat_input("Type your message")
 
-if user_prompt:
+if prompt:
+    st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # store user message
-    st.session_state.messages.append(
-        {"role": "user", "content": user_prompt}
-    )
-
-    with st.chat_message("user"):
-        st.markdown(user_prompt)
-
-    # typing indicator (feels real)
     with st.chat_message("assistant"):
         with st.spinner("LejonBot is typing..."):
-            time.sleep(0.6)
-            reply = generate_reply(user_prompt)
+            time.sleep(0.5)
+            reply = generate_reply(prompt)
             st.markdown(reply)
 
-    st.session_state.messages.append(
-        {"role": "assistant", "content": reply}
-    )
+    st.session_state.messages.append({"role": "assistant", "content": reply})
 
-# ---------------- QUICK REPLY BUTTONS ----------------
+# ---------------- MAIN ACTION BUTTONS ----------------
 st.write("")
-
 col1, col2, col3 = st.columns(3)
 
 if col1.button("🎬 Courses"):
-    st.session_state.messages.append({"role": "assistant", "content": generate_reply("courses")})
+    st.session_state.active_panel = "courses"
     st.rerun()
 
 if col2.button("💰 Fees"):
-    st.session_state.messages.append({"role": "assistant", "content": generate_reply("fees")})
+    st.session_state.active_panel = "fees"
     st.rerun()
 
 if col3.button("📍 Location"):
-    st.session_state.messages.append({"role": "assistant", "content": generate_reply("location")})
+    st.session_state.active_panel = "location"
     st.rerun()
+
+# ---------------- DYNAMIC PANELS ----------------
+st.write("")
+
+if st.session_state.active_panel == "courses":
+    st.subheader("Choose a Course")
+
+    c1, c2, c3 = st.columns(3)
+
+    if c1.button("Animation"):
+        st.session_state.messages.append({"role": "assistant", "content": generate_reply("animation")})
+        st.rerun()
+
+    if c2.button("VFX"):
+        st.session_state.messages.append({"role": "assistant", "content": generate_reply("vfx")})
+        st.rerun()
+
+    if c3.button("Editing"):
+        st.session_state.messages.append({"role": "assistant", "content": generate_reply("editing")})
+        st.rerun()
+
+elif st.session_state.active_panel == "fees":
+    st.subheader("Fees Information")
+    st.info("💰 Fees vary by course and duration. Please contact Lejon Animation Studio for exact details.")
+
+elif st.session_state.active_panel == "location":
+    st.subheader("Studio Location")
+    st.success("📍 University Road, Rajkot")
