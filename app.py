@@ -10,28 +10,11 @@ if "messages" not in st.session_state:
         {"role": "bot", "text": "Welcome to Lejon Animation Studio 😊 How can I help you today?"}
     ]
 
-# ---- Chat Display FIRST ----
-for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        st.markdown(
-            f"<div style='text-align:right; background:#0a84ff; color:white; padding:10px; border-radius:12px; margin:6px;'>"
-            f"{msg['text']}</div>",
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            f"<div style='text-align:left; background:#1f2937; color:#00ffcc; padding:10px; border-radius:12px; margin:6px;'>"
-            f"{msg['text']}</div>",
-            unsafe_allow_html=True
-        )
+# ---- Input Box FIRST (important) ----
+user_input = st.chat_input("Type your message")
 
-# ---- Input Form ----
-with st.form("chat_form", clear_on_submit=True):
-    user_input = st.text_input("Type your message")
-    submitted = st.form_submit_button("Send")
-
-# ---- Process Input (NO st.rerun) ----
-if submitted and user_input:
+# ---- Process Input ----
+if user_input:
     st.session_state.messages.append({"role": "user", "text": user_input})
     text = user_input.lower()
 
@@ -60,3 +43,12 @@ if submitted and user_input:
         reply = "Nice 🙂 Ask me about courses, fees, duration, drawing, or careers."
 
     st.session_state.messages.append({"role": "bot", "text": reply})
+
+# ---- Chat Display AFTER processing ----
+for msg in st.session_state.messages:
+    if msg["role"] == "user":
+        with st.chat_message("user"):
+            st.write(msg["text"])
+    else:
+        with st.chat_message("assistant"):
+            st.write(msg["text"])
