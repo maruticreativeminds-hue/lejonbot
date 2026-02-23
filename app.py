@@ -1,58 +1,89 @@
 import streamlit as st
+import time
 
 st.set_page_config(page_title="LejonBot", page_icon="🤖")
 
 st.title("LejonBot 🤖")
 
+# ---------------- MEMORY INIT ----------------
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "bot", "text": "Welcome to Lejon Animation Studio 😊 How can I help you today?"}
+        {"role": "assistant", "content": "Welcome to Lejon Animation Studio 😊 How can I help you today?"}
     ]
 
-for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        st.markdown(
-            f"<div style='text-align:right; background:#0a84ff; color:white; padding:10px; border-radius:12px; margin:6px;'>"
-            f"{msg['text']}</div>",
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            f"<div style='text-align:left; background:#1f2937; color:#00ffcc; padding:10px; border-radius:12px; margin:6px;'>"
-            f"{msg['text']}</div>",
-            unsafe_allow_html=True
-        )
-
-with st.form("chat_form", clear_on_submit=True):
-    user_input = st.text_input("Type your message")
-    submitted = st.form_submit_button("Send")
-
-if submitted and user_input:
-    st.session_state.messages.append({"role": "user", "text": user_input})
-    text = user_input.lower()
+# ---------------- RESPONSE ENGINE ----------------
+def generate_reply(user_text):
+    text = user_text.lower()
 
     if any(word in text for word in ["hi", "hello", "hey"]):
-        reply = "Hello 😊 You can ask about courses, fees, duration, drawing, or careers."
+        return "Hello 😊 Ask me about courses, fees, duration, drawing skills, or careers."
 
     elif "course" in text:
-        reply = "We offer Animation, VFX, Background Design, Video Editing, and AI Film Making ✨"
+        return "We offer Animation, VFX, Background Design, Video Editing, and AI Film Making ✨"
 
     elif "animation" in text or "ani" in text:
-        reply = "Great choice 😃 Animation includes 2D, 3D, character design & storytelling."
+        return "Great choice 😃 Our Animation program covers 2D, 3D, character design, and storytelling."
 
     elif "fees" in text or "fee" in text:
-        reply = "Fees vary by course 🙂 Please contact the studio for details."
+        return "Fees vary by course 🙂 For accurate details, please contact Lejon Animation Studio."
 
     elif "duration" in text:
-        reply = "Duration depends on the selected program 👍"
+        return "Duration depends on the selected program 👍 Typically ranges from short-term to professional tracks."
 
     elif "drawing" in text:
-        reply = "No worries 😊 Drawing skills are NOT required."
+        return "No worries 😊 Drawing skills are NOT mandatory. We train from basics."
+
+    elif "career" in text or "job" in text:
+        return "Students explore careers in animation studios, VFX houses, gaming, editing, and digital media 🚀"
 
     elif "location" in text:
-        reply = "We are located at 📍 University Road, Rajkot."
+        return "We are located at 📍 University Road, Rajkot."
 
     else:
-        reply = "Nice 🙂 Ask me about courses, fees, duration, drawing, or careers."
+        return "Nice 🙂 You can ask about courses, fees, duration, drawing skills, careers, or location."
 
-    st.session_state.messages.append({"role": "bot", "text": reply})
+# ---------------- CHAT HISTORY RENDER ----------------
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+# ---------------- USER INPUT ----------------
+user_prompt = st.chat_input("Type your message")
+
+if user_prompt:
+
+    # store user message
+    st.session_state.messages.append(
+        {"role": "user", "content": user_prompt}
+    )
+
+    with st.chat_message("user"):
+        st.markdown(user_prompt)
+
+    # typing indicator (feels real)
+    with st.chat_message("assistant"):
+        with st.spinner("LejonBot is typing..."):
+            time.sleep(0.6)
+            reply = generate_reply(user_prompt)
+            st.markdown(reply)
+
+    st.session_state.messages.append(
+        {"role": "assistant", "content": reply}
+    )
+
+# ---------------- QUICK REPLY BUTTONS ----------------
+st.write("")
+
+col1, col2, col3 = st.columns(3)
+
+if col1.button("🎬 Courses"):
+    st.session_state.messages.append({"role": "assistant", "content": generate_reply("courses")})
+    st.rerun()
+
+if col2.button("💰 Fees"):
+    st.session_state.messages.append({"role": "assistant", "content": generate_reply("fees")})
+    st.rerun()
+
+if col3.button("📍 Location"):
+    st.session_state.messages.append({"role": "assistant", "content": generate_reply("location")})
+    st.rerun()
