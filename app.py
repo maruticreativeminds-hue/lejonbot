@@ -2,100 +2,79 @@ import streamlit as st
 
 st.title("LejonBot 🤖")
 
+# Memory storage
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        ("LejonBot", "Welcome to Lejon Animation Studio 😃\n\nHow can I help you today?")
+        {"role": "bot", "text": "Welcome to Lejon Animation Studio 😊\n\nHow can I help you today?"}
     ]
 
-user_input = st.text_input("Say something")
+# Display chat bubbles
+for msg in st.session_state.messages:
+    if msg["role"] == "user":
+        st.markdown(
+            f"<div style='text-align:right; background:#0a84ff; color:white; padding:8px; border-radius:10px; margin:5px;'>"
+            f"{msg['text']}</div>",
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            f"<div style='text-align:left; background:#1f2937; color:#00ffcc; padding:8px; border-radius:10px; margin:5px;'>"
+            f"{msg['text']}</div>",
+            unsafe_allow_html=True
+        )
+
+user_input = st.text_input("Type your message")
 
 if user_input:
-    st.session_state.messages.append(("You", user_input))
+    st.session_state.messages.append({"role": "user", "text": user_input})
     text = user_input.lower()
 
-    if "hello" in text or "hi" in text:
-        reply = "Hey there 😊 How can I help you? You can ask about courses, fees, duration, eligibility, etc."
+    if any(word in text for word in ["hi", "hello", "hey"]):
+        reply = "Hello 😊 Ask me about courses, fees, duration, drawing, or careers."
 
-    elif "course" in text or "courses" in text:
+    elif "course" in text:
         reply = (
-            "Here are our courses 🎬\n\n"
-            "🎬 Animation\n"
-            "🎨 Background Design\n"
-            "✨ VFX\n"
-            "🎞 Video Editing\n"
-            "🤖 AI Film Making\n\n"
+            "We offer exciting courses ✨<br><br>"
+            "🎬 Animation<br>"
+            "🎨 Background Design<br>"
+            "✨ VFX<br>"
+            "🎞 Video Editing<br>"
+            "🤖 AI Film Making<br><br>"
             "Which one interests you?"
         )
 
     elif "animation" in text:
-        reply = (
-            "Awesome choice 😃\n\nAnimation covers:\n"
-            "• 2D & 3D Fundamentals\n"
-            "• Character Design\n"
-            "• Storytelling\n"
-            "• Industry Workflow"
-        )
+        reply = "Great choice 😃 Animation covers 2D & 3D fundamentals, character design, and storytelling."
 
     elif "background" in text:
-        reply = (
-            "Great pick 🎨\n\nBackground Design includes:\n"
-            "• Environment Drawing\n"
-            "• Perspective\n"
-            "• Digital Painting"
-        )
+        reply = "Nice 😍 Background Design teaches environment drawing, perspective, and digital painting."
 
     elif "vfx" in text:
-        reply = (
-            "Nice 🔥\n\nVFX course teaches:\n"
-            "• Visual Effects Basics\n"
-            "• Compositing\n"
-            "• Effects Workflow"
-        )
+        reply = "Awesome 🔥 VFX includes visual effects, compositing, and effects workflow."
 
     elif "editing" in text:
-        reply = (
-            "Cool 🎞\n\nVideo Editing covers:\n"
-            "• Editing Software\n"
-            "• Transitions\n"
-            "• Cinematic Cuts"
-        )
+        reply = "Cool 🎬 Video Editing covers transitions, cinematic cuts, and editing tools."
 
     elif "ai" in text:
-        reply = (
-            "Future-ready choice 🤖✨\n\nAI Film Making includes:\n"
-            "• AI Tools\n"
-            "• Content Creation\n"
-            "• Modern Workflow"
-        )
+        reply = "Future-ready choice 🤖 AI Film Making explores modern AI tools for creative projects."
 
-    elif "fee" in text or "fees" in text or "price" in text:
-        reply = "Fees vary by course 🙂 Please contact the studio directly for latest details."
+    elif any(word in text for word in ["fee", "fees", "price"]):
+        reply = "Fees vary by course 🙂 Please contact the studio for complete details."
 
-    elif "duration" in text or "how long" in text:
-        reply = "Course duration depends on the program 👍 Typically discussed during counseling."
+    elif any(word in text for word in ["duration", "how long"]):
+        reply = "Course duration depends on the program and learning pace 👍"
 
-    elif "eligibility" in text or "who can join" in text:
-        reply = (
-            "Everyone is welcome 😃\n\n"
-            "• School students\n"
-            "• College students\n"
-            "• Graduates\n"
-            "• Beginners & advanced learners"
-        )
+    elif "drawing" in text:
+        reply = "No worries 😊 Drawing skills are not required. We teach everything from basics."
 
-    elif "drawing" in text or "not know drawing" in text:
-        reply = "No worries at all 😊 Drawing skills are NOT required. We teach from basics."
-
-    elif "location" in text or "where" in text or "address" in text:
+    elif any(word in text for word in ["location", "where", "address"]):
         reply = "We are located at 📍 University Road, Rajkot."
 
-    elif "contact" in text or "phone" in text or "call" in text:
-        reply = "You can visit the studio directly on University Road, Rajkot 👍"
+    elif any(word in text for word in ["job", "career", "future"]):
+        reply = "Animation offers amazing career paths in films, games, design, and digital content ✨"
 
     else:
-        reply = "Nice 🙂 You can ask me about courses, eligibility, fees, duration, or location."
+        reply = "Nice 🙂 You can ask about courses, fees, duration, drawing, or careers."
 
-    st.session_state.messages.append(("LejonBot", reply))
-
-for sender, msg in st.session_state.messages:
-    st.write(f"**{sender}:** {msg}")
+    st.session_state.messages.append({"role": "bot", "text": reply})
+    st.rerun()
