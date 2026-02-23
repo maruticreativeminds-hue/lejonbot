@@ -2,28 +2,14 @@ import streamlit as st
 
 st.title("LejonBot 🤖")
 
-# Memory storage
+# Initialize memory
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "bot", "text": "Welcome to Lejon Animation Studio 😊\n\nHow can I help you today?"}
+        {"role": "bot", "text": "Welcome to Lejon Animation Studio 😊 How can I help you today?"}
     ]
 
-# Display chat bubbles
-for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        st.markdown(
-            f"<div style='text-align:right; background:#0a84ff; color:white; padding:8px; border-radius:10px; margin:5px;'>"
-            f"{msg['text']}</div>",
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            f"<div style='text-align:left; background:#1f2937; color:#00ffcc; padding:8px; border-radius:10px; margin:5px;'>"
-            f"{msg['text']}</div>",
-            unsafe_allow_html=True
-        )
-
-user_input = st.text_input("Type your message")
+# User input FIRST (important)
+user_input = st.text_input("Type your message", key="input")
 
 if user_input:
     st.session_state.messages.append({"role": "user", "text": user_input})
@@ -34,12 +20,12 @@ if user_input:
 
     elif "course" in text:
         reply = (
-            "We offer exciting courses ✨<br><br>"
-            "🎬 Animation<br>"
-            "🎨 Background Design<br>"
-            "✨ VFX<br>"
-            "🎞 Video Editing<br>"
-            "🤖 AI Film Making<br><br>"
+            "We offer exciting courses ✨\n\n"
+            "🎬 Animation\n"
+            "🎨 Background Design\n"
+            "✨ VFX\n"
+            "🎞 Video Editing\n"
+            "🤖 AI Film Making\n\n"
             "Which one interests you?"
         )
 
@@ -77,4 +63,20 @@ if user_input:
         reply = "Nice 🙂 You can ask about courses, fees, duration, drawing, or careers."
 
     st.session_state.messages.append({"role": "bot", "text": reply})
+    st.session_state.input = ""  # clear input
     st.rerun()
+
+# Display chat AFTER logic (important)
+for msg in st.session_state.messages:
+    if msg["role"] == "user":
+        st.markdown(
+            f"<div style='text-align:right; background:#0a84ff; color:white; padding:8px; border-radius:10px; margin:5px;'>"
+            f"{msg['text']}</div>",
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            f"<div style='text-align:left; background:#1f2937; color:#00ffcc; padding:8px; border-radius:10px; margin:5px;'>"
+            f"{msg['text']}</div>",
+            unsafe_allow_html=True
+        )
