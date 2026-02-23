@@ -2,13 +2,11 @@ import streamlit as st
 
 st.title("LejonBot 🤖")
 
-# Initialize memory
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "bot", "text": "Welcome to Lejon Animation Studio 😊 How can I help you today?"}
     ]
 
-# User input FIRST (important)
 user_input = st.text_input("Type your message", key="input")
 
 if user_input:
@@ -63,10 +61,8 @@ if user_input:
         reply = "Nice 🙂 You can ask about courses, fees, duration, drawing, or careers."
 
     st.session_state.messages.append({"role": "bot", "text": reply})
-    st.session_state.input = ""  # clear input
     st.rerun()
 
-# Display chat AFTER logic (important)
 for msg in st.session_state.messages:
     if msg["role"] == "user":
         st.markdown(
