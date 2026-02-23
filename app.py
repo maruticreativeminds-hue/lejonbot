@@ -4,73 +4,13 @@ st.set_page_config(page_title="LejonBot", page_icon="🤖")
 
 st.title("LejonBot 🤖")
 
-# Memory initialization
+# ---- Memory Init ----
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "bot", "text": "Welcome to Lejon Animation Studio 😊 How can I help you today?"}
     ]
 
-# ---- INPUT FORM (CRITICAL FIX) ----
-with st.form("chat_form", clear_on_submit=True):
-    user_input = st.text_input("Type your message")
-    submitted = st.form_submit_button("Send")
-
-# ---- MESSAGE PROCESSING ----
-if submitted and user_input:
-    st.session_state.messages.append({"role": "user", "text": user_input})
-    text = user_input.lower()
-
-    if any(word in text for word in ["hi", "hello", "hey"]):
-        reply = "Hello 😊 You can ask about courses, fees, duration, drawing, or careers."
-
-    elif "course" in text:
-        reply = (
-            "We offer exciting courses ✨\n\n"
-            "🎬 Animation\n"
-            "🎨 Background Design\n"
-            "✨ VFX\n"
-            "🎞 Video Editing\n"
-            "🤖 AI Film Making\n\n"
-            "Which one interests you?"
-        )
-
-    elif "ani" in text:
-        reply = "Great choice 😃 Animation covers 2D & 3D fundamentals, character design, and storytelling."
-
-    elif "bg" in text or "background" in text:
-        reply = "Nice 😍 Background Design teaches environment drawing, perspective, and digital painting."
-
-    elif "vfx" in text:
-        reply = "Awesome 🔥 VFX includes visual effects, compositing, and effects workflow."
-
-    elif "edit" in text:
-        reply = "Cool 🎬 Video Editing covers transitions, cinematic cuts, and editing tools."
-
-    elif "ai" in text:
-        reply = "Future-ready choice 🤖 AI Film Making explores modern AI tools for creative projects."
-
-    elif any(word in text for word in ["fee", "fees", "price"]):
-        reply = "Fees vary by course 🙂 Please contact the studio for complete details."
-
-    elif any(word in text for word in ["duration", "how long", "length"]):
-        reply = "Course duration depends on the program and learning pace 👍"
-
-    elif "drawing" in text:
-        reply = "No worries 😊 Drawing skills are NOT required. We teach everything from basics."
-
-    elif any(word in text for word in ["location", "where", "address"]):
-        reply = "We are located at 📍 University Road, Rajkot."
-
-    elif any(word in text for word in ["job", "career", "future"]):
-        reply = "Animation offers amazing career paths in films, games, design, and digital content ✨"
-
-    else:
-        reply = "Nice 🙂 Ask me about courses, fees, duration, drawing, or careers."
-
-    st.session_state.messages.append({"role": "bot", "text": reply})
-    st.rerun()
-
-# ---- CHAT DISPLAY (AFTER LOGIC) ----
+# ---- Chat Display FIRST ----
 for msg in st.session_state.messages:
     if msg["role"] == "user":
         st.markdown(
@@ -84,3 +24,39 @@ for msg in st.session_state.messages:
             f"{msg['text']}</div>",
             unsafe_allow_html=True
         )
+
+# ---- Input Form ----
+with st.form("chat_form", clear_on_submit=True):
+    user_input = st.text_input("Type your message")
+    submitted = st.form_submit_button("Send")
+
+# ---- Process Input (NO st.rerun) ----
+if submitted and user_input:
+    st.session_state.messages.append({"role": "user", "text": user_input})
+    text = user_input.lower()
+
+    if any(word in text for word in ["hi", "hello", "hey"]):
+        reply = "Hello 😊 You can ask about courses, fees, duration, drawing, or careers."
+
+    elif "course" in text:
+        reply = "We offer Animation, VFX, Background Design, Video Editing, and AI Film Making ✨"
+
+    elif "animation" in text or "ani" in text:
+        reply = "Great choice 😃 Animation includes 2D, 3D, character design & storytelling."
+
+    elif "fees" in text or "fee" in text:
+        reply = "Fees vary by course 🙂 Please contact the studio for details."
+
+    elif "duration" in text:
+        reply = "Duration depends on the selected program 👍"
+
+    elif "drawing" in text:
+        reply = "No worries 😊 Drawing skills are NOT required."
+
+    elif "location" in text:
+        reply = "We are located at 📍 University Road, Rajkot."
+
+    else:
+        reply = "Nice 🙂 Ask me about courses, fees, duration, drawing, or careers."
+
+    st.session_state.messages.append({"role": "bot", "text": reply})
